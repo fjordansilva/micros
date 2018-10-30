@@ -5,7 +5,7 @@ import (
 )
 
 type Repository {
-	FindAvailable()
+	FindAvailable(*pb.Specification)
 }
 
 func main() {
