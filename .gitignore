@@ -13,3 +13,8 @@
 
 #Development
 .idea
+
+# Binaries del proyecto
+consignment-cli
+consignment-service
+vessel-service

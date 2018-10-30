@@ -26,7 +26,7 @@ func (repo *VesselRepository) FindAvailable(spec *pb.Specification) (*pb.Vessel,
 			return vessel, nil
 		}
 	}
-	return nil, errors.New(1,"No vessel found by that spec", 1)
+	return nil, errors.New("1","No vessel found by that spec", 1)
 }
 
 // gRPC service handler
