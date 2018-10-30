@@ -5,14 +5,8 @@ import (
 	// Import the generated protobuf code
 	"context"
 	pb "github.com/fjordansilva/micros/consignment-service/proto/consignment"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"github.com/micro/go-micro"
 	"log"
-	"net"
-)
-
-const (
-	port = ":50051"
 )
 
 type IRepository interface {
@@ -44,38 +38,42 @@ type service struct {
 
 // CreateConsigment - creamos solo un metodo para el servicio
 // Este metodo obtiene un contexto y una request como argumento que se envia al servidor gRPC.
-func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment) (*pb.Response, error) {
+func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, res *pb.Response) error {
 	consignment, err := s.repo.Create(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Se devuelve el mensaje de respuesta
-	return &pb.Response{Created: true, Consignment: consignment}, nil
+	res.Created = true
+	res.Consignment = consignment
+	return nil
 }
 
-func (s *service) GetConsignments(ctx context.Context, req *pb.GetRequest) (*pb.Response, error) {
+func (s *service) GetConsignments(ctx context.Context, req *pb.GetRequest, res *pb.Response) error {
 	consignments := s.repo.GetAll()
-	return &pb.Response{Consignments: consignments}, nil
+	res.Consignments = consignments
+	return nil
 }
 
 func main() {
 	repo := &Repository{}
 
-	// Setup el servidor gRPC
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("Failed to lister: %v", err)
-	}
-	s := grpc.NewServer()
+	// Create a new service. Optionally include some options here.
+	srv := micro.NewService(
+		// This name must match the package name given in your protobuf definition
+		micro.Name("go.micro.srv.consignment"),
+		micro.Version("latest"),
+	)
 
-	// Registro de nuestro servicio en el servidor gRPC.
-	// De esta forma se une la implementación al codigo autogenerado
-	pb.RegisterShippingServiceServer(s, &service{repo})
+	// Init will parse the command line flags
+	srv.Init()
 
-	// Registro del sistema de reflexion del servidor gRPC
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
+	// Register handler
+	pb.RegisterShippingServiceHandler(srv.Server(), &service{repo})
+
+	// Run the server
+	if err := srv.Run(); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 }
