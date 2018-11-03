@@ -22,7 +22,7 @@ RUN dep init && dep ensure
 
 # Build the binary, with a few flags which will allow
 # us to run this binary in Alpine.
-RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo main.go repository.go handler.go datastore.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo -o vessel-service main.go repository.go handler.go datastore.go
 
 
 # Here we're using a second FROM statement, which is strange,

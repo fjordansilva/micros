@@ -1,4 +1,9 @@
-FROM golang:1.11 as builder
+# user-service/Dockerfile
+
+# We use the official golang image, which contains all the
+# correct build tools and libraries. Notice `as builder`,
+# this gives this container a name that we can reference later on.
+FROM golang:1.11.1 as builder
 
 # Set our workdir to our current service in the gopath
 WORKDIR /go/src/github.com/fjordansilva/micros/user-service
@@ -17,7 +22,7 @@ RUN dep init && dep ensure
 
 # Build the binary, with a few flags which will allow
 # us to run this binary in Alpine.
-RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo *.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo -o user-service main.go repository.go handler.go database.go token_service.go
 
 
 # Here we're using a second FROM statement, which is strange,
