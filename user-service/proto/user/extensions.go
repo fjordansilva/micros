@@ -7,9 +7,10 @@ import (
 
 func (model *User) BeforeCreate(scope *gorm.Scope) error {
 
-	uuid2, err := uuid.NewV4()
-	if err != nil {
-		return err
-	}
-	return scope.SetColumn("Id", uuid2.String())
+	// u, err := uuid.NewV4()
+	// if err != nil {
+	//	return err
+	// }
+	u := uuid.Must(uuid.NewV4())
+	return scope.SetColumn("Id", u.String())
 }

@@ -1,4 +1,4 @@
-FROM golang:1.11.1 as builder
+FROM golang:1.11 as builder
 
 # Set our workdir to our current service in the gopath
 WORKDIR /go/src/github.com/fjordansilva/micros/user-service
@@ -17,7 +17,7 @@ RUN dep init && dep ensure
 
 # Build the binary, with a few flags which will allow
 # us to run this binary in Alpine.
-RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo main.go repository.go handler.go database.go token_service.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -v -installsuffix cgo *.go
 
 
 # Here we're using a second FROM statement, which is strange,
